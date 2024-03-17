@@ -9,7 +9,7 @@ const io = socketIo(server, {
     cors: {
         origin: 'http://localhost:5173'
     }
-}) //in case server and client run on different urls
+})
 io.on('connection', (socket) => {
     console.log('client connected: ', socket.id)
 
@@ -19,8 +19,21 @@ io.on('connection', (socket) => {
         console.log(reason)
     })
 })
+
+const graphData = [
+    { name: 1, x: Math.random() * 10, y: Math.random() * 10 },
+    { name: 2, x: Math.random() * 10, y: Math.random() * 10 },
+    { name: 3, x: Math.random() * 10, y: Math.random() * 10 },
+    { name: 4, x: Math.random() * 10, y: Math.random() * 10 },
+    { name: 5, x: Math.random() * 10, y: Math.random() * 10 },
+]
 setInterval(() => {
-    io.to('clock-room').emit('time', new Date())
+    if (graphData.length >= 5) {
+        graphData.reverse().pop()
+        graphData.reverse()
+    }
+    graphData.push({ name: graphData[graphData.length - 1].name + 1, x: Math.random() * 10, y: Math.random() * 10 })
+    io.to('clock-room').emit('time', graphData)
 }, 1000)
 
 data = []
